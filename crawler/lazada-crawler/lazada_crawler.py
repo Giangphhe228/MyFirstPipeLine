@@ -232,4 +232,4 @@ def multiPageCrawl(n):
                 print("no found.")
                 continue
 
-multiPageCrawl(6)
+multiPageCrawl(4)

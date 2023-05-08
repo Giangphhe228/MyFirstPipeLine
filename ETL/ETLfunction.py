@@ -125,3 +125,33 @@ def extract_ctiki_items(url):
 # if os.path.exists("F:\RnD\ETL\etlCrawlData\datatiki.csv"):
 #     os.remove("F:\RnD\ETL\etlCrawlData\datatiki.csv")
 # df_product.to_csv("F:\RnD\ETL\etlCrawlData\datatiki.csv", encoding="utf-8-sig")  
+
+def extract_ctiki_comment(url):
+     df_cmt = extract_from_csv(url)
+     df_cmt = df_cmt.drop(columns=["title","purchased_at", "Unnamed: 0"])
+     df_cmt.rename(columns = {'id':'cmt_id', 'thank_count':'like_count', 'customer_id':'user_id'
+                                 ,'created_at':'created_time'}, inplace = True)
+     return df_cmt
+
+# df_product= extract_ctiki_comment(TikiCmtUrl)
+# # print("gia tri df: \n",df_product) 
+# if os.path.exists("F:\RnD\ETL\etlCrawlData\cmttiki.csv"):
+#     os.remove("F:\RnD\ETL\etlCrawlData\cmttiki.csv")
+# df_product.to_csv("F:\RnD\ETL\etlCrawlData\cmttiki.csv", encoding="utf-8-sig")  
+
+def extract_shopee_comment(url):
+     df_cmt = extract_from_csv(url)
+     df_cmt = df_cmt.drop(columns=["shop_id", "Unnamed: 0", "seller_service"])
+     df_cmt.rename(columns = {'id':'cmt_id', 'cmt_content':'content'
+                                 ,'time':'created_time','product_quality':'rating','author_username':'user_name'}, inplace = True)
+    #  df_cmt.dropna()
+     df_cmt['like_count'] = df_cmt['like_count'].replace(np.nan ,0)
+    #  df_cmt['user_name'] = df_cmt['user_name'].dropna()
+     df_cmt = df_cmt[df_cmt['user_name'].notna()]
+     return df_cmt
+
+df_product= extract_shopee_comment(ShopeeCmtUrl)
+# print("gia tri df: \n",df_product['user_name']) 
+if os.path.exists("F:\RnD\ETL\etlCrawlData\cmtshopee.csv"):
+    os.remove("F:\RnD\ETL\etlCrawlData\cmtshopee.csv")
+df_product.to_csv("F:\RnD\ETL\etlCrawlData\cmtshopee.csv", encoding="utf-8-sig") 

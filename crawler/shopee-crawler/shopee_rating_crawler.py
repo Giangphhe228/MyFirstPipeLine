@@ -77,7 +77,9 @@ def comment_parser(list):
     d['cmt_content'] = list['comment']
     d['time'] = list['ctime']
     d['product_quality'] = list['detailed_rating']['product_quality']
-    d['seller_service']  = list['detailed_rating']['seller_service']
+    d['seller_service']  = list['detailed_rating']['seller_service'] 
+    d['like_count']  = list['like_count']
+    d['author_username']  = list['author_username']
     # d['product_quality'] = list['detailed_rating']['product_quality']
     # d['seller_service']  = list['detailed_rating']['seller_service']
     return d

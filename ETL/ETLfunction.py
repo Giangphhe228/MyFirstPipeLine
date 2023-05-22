@@ -14,12 +14,35 @@ from datetime import datetime
 from psycopg2.errorcodes import UNIQUE_VIOLATION
 from psycopg2 import errors
 
-LazadaItemsUrl    = "F:\RnD\ETL\lazadaexportdata\item"            # file used to store all extracted data
-TikiItemsUrl  = 'F:\RnD\ETL\ctiki\productData_dtmtb.csv'
-ShopeeItemsUrl   = "F:\RnD\ETL\shopee\productId_shopee.csv"            # all event logs will be stored in this file  # file where transformed data is stored
-TikiCmtUrl = "F:\RnD\ETL\ctiki\comments_data_ncds.csv"
-ShopeeCmtUrl = "F:\RnD\ETL\shopee\comments_data_shopee.csv"
-ShopeeShopUrl = "F:\RnD\ETL\shopee\shop_data_shopee.csv"
+####################### url for windows
+# LazadaItemsUrl    = "F:\RnD\ETL\lazadaexportdata\item"            # file used to store all extracted data
+# TikiItemsUrl  = 'F:\RnD\ETL\ctiki\productData_dtmtb.csv'
+# ShopeeItemsUrl   = "F:\RnD\ETL\shopee\productId_shopee.csv"            # all event logs will be stored in this file  # file where transformed data is stored
+# TikiCmtUrl = "F:\RnD\ETL\ctiki\comments_data_ncds.csv"
+# ShopeeCmtUrl = "F:\RnD\ETL\shopee\comments_data_shopee.csv"
+# ShopeeShopUrl = "F:\RnD\ETL\shopee\shop_data_shopee.csv"
+
+# # extracted_shopee_items_url    = "F:\RnD\ETL\etlCrawlData\datashopee.csv"            # file used to store all extracted data
+# # extracted_tiki_items_url  = "F:\RnD\ETL\etlCrawlData\datatiki.csv"
+# # extracted_lazada_items_url  = "F:\RnD\ETL\etlCrawlData\datalazada.csv"
+# # extracted_tiki_cmt_url   = "F:\RnD\ETL\etlCrawlData\cmttiki.csv"            # all event logs will be stored in this file  # file where transformed data is stored
+# # extracted_shopee_cmt_url = "F:\RnD\ETL\etlCrawlData\cmtshopee.csv" 
+
+####################### url for ubuntu airflow
+LazadaItemsUrl    = "/mnt/f/RnD/ETL/lazadaexportdata/item"            # file used to store all extracted data
+TikiItemsUrl  = '/mnt/f/RnD/ETL/ctiki/productData_dtmtb.csv'
+ShopeeItemsUrl   = "/mnt/f/RnD/ETL/shopee/productId_shopee.csv"            # all event logs will be stored in this file  # file where transformed data is stored
+TikiCmtUrl = "/mnt/f/RnD/ETL/ctiki/comments_data_ncds.csv"
+ShopeeCmtUrl = "/mnt/f/RnD/ETL/shopee/comments_data_shopee.csv"
+ShopeeShopUrl = "/mnt/f/RnD/ETL/shopee/shop_data_shopee.csv"
+
+extracted_shopee_items_url    = "/mnt/f/RnD/ETL/etlCrawlData/datashopee.csv"            # file used to store all extracted data
+extracted_tiki_items_url  = "/mnt/f/RnD/ETL/etlCrawlData/datatiki.csv"
+extracted_lazada_items_url  = "/mnt/f/RnD/ETL/etlCrawlData/datalazada.csv"
+extracted_tiki_cmt_url   = "/mnt/f/RnD/ETL/etlCrawlData/cmttiki.csv"            # all event logs will be stored in this file  # file where transformed data is stored
+extracted_shopee_cmt_url = "/mnt/f/RnD/ETL/etlCrawlData/cmtshopee.csv"
+
+logfile_url= "/mnt/f/RnD/ETL/etlCrawlData/logfile.txt"
 
 def rearrange_items_dataframe(dataframe=pd.DataFrame()):
      col = dataframe.pop("product_id")
@@ -71,7 +94,7 @@ def extract_lazada_items(url):
     for i in range(0,pageNumber,1):
         # print("Crawl page number {}...".format(i))
         # df_result.append(extract_from_csv(LazadaItemsUrl+"itemPage{}.csv".format(i)))
-        df_data = extract_from_csv(url+"\itemPage{}.csv".format(i))
+        df_data = extract_from_csv(url+"/itemPage{}.csv".format(i))
         # df_data = df_data.reset_index(drop=True) 
         list_product_id=[]
         # print("đây là list product_id: \n",df_result['link_item'])
@@ -120,17 +143,14 @@ def extract_lazada_items(url):
     df_result['sold_product'] = df_result['sold_product'].str.replace(" Đã bán","", regex=False)
     df_result['sold_product'] = df_result['sold_product'].str.replace(",", "", regex=False)
     df_result['sold_product'] = df_result['sold_product'].str.replace("+", "", regex=False)
-    # df_result["brand_id"]=df_result["brand_id"].str.strip()
-    # df_result["brand_name"]=df_result["brand_name"].str.strip()
-    # df_result["shop_id"]=df_result["shop_id"].str.strip()
-    # df_result["shop_name"]=df_result["shop_name"].str.strip()
+    if os.path.exists("F:\RnD\ETL\etlCrawlData\datalazada.csv"):
+        os.remove("F:\RnD\ETL\etlCrawlData\datalazada.csv")
+    df_result.to_csv("F:\RnD\ETL\etlCrawlData\datalazada.csv", encoding="utf-8-sig")
 
-    return df_result
+    # return df_result
 
 # df_product= extract_lazada_items(LazadaItemsUrl)
 # print("kieu du lieu la: ",type(df_product['shop_id']))
-# print(df_product['shop_id'])
-# print(df_product['brand_id'])
 # if os.path.exists("F:\RnD\ETL\etlCrawlData\datalazada.csv"):
 #     os.remove("F:\RnD\ETL\etlCrawlData\datalazada.csv")
 # df_product.to_csv("F:\RnD\ETL\etlCrawlData\datalazada.csv", encoding="utf-8-sig")
@@ -170,14 +190,16 @@ def extract_shopee_items(url,shopurl):
                 break
     # print("day la id va ten: \n",name_list)
     df_result["shop_name"]= name_list       
-
+    if os.path.exists("F:\RnD\ETL\etlCrawlData\datashopee.csv"):
+        os.remove("F:\RnD\ETL\etlCrawlData\datashopee.csv")
+    df_result.to_csv("F:\RnD\ETL\etlCrawlData\datashopee.csv", encoding="utf-8-sig")  
     # print("đây là kết quả: \n",df_result)
     # df_result["brand_id"]=df_result["brand_id"].strip()
     # df_result["brand_name"]=df_result["brand_name"].str.strip()
     # df_result["shop_id"]=df_result["shop_id"].str.strip()
     # df_result["shop_name"]=df_result["shop_name"].str.strip()
 
-    return df_result
+    # return df_result
 
 # df_product= extract_shopee_items(ShopeeItemsUrl)
 # print("gia tri brand: \n",df_product['brand_name']) 
@@ -197,8 +219,11 @@ def extract_ctiki_items(url):
      df_result["brand_name"]=df_result["brand_name"].str.strip()
     #  df_result["shop_id"]=df_result["shop_id"].strip()
      df_result["shop_name"]=df_result["shop_name"].str.strip()
+     if os.path.exists("F:\RnD\ETL\etlCrawlData\datatiki.csv"):
+        os.remove("F:\RnD\ETL\etlCrawlData\datatiki.csv")
+     df_result.to_csv("F:\RnD\ETL\etlCrawlData\datatiki.csv", encoding="utf-8-sig") 
 
-     return df_result
+    #  return df_result
 # df_product= extract_ctiki_items(TikiItemsUrl)
 # # print("gia tri df: \n",df_product) 
 # if os.path.exists("F:\RnD\ETL\etlCrawlData\datatiki.csv"):
@@ -218,7 +243,10 @@ def extract_ctiki_comment(url):
     #      value=row['user_id']+row['user_name']
     #      user_id.append(int.from_bytes(value.encode('utf-8-sig'), 'little'))
     #  df_result['shop_id'] = shop_id
-     return df_cmt
+     if os.path.exists("F:\RnD\ETL\etlCrawlData\cmttiki.csv"):
+        os.remove("F:\RnD\ETL\etlCrawlData\cmttiki.csv")
+     df_cmt.to_csv("F:\RnD\ETL\etlCrawlData\cmttiki.csv", encoding="utf-8-sig")  
+    #  return df_cmt
 
 # df_product= extract_ctiki_comment(TikiCmtUrl)
 # # print("gia tri df: \n",df_product) 
@@ -236,7 +264,10 @@ def extract_shopee_comment(url):
      df_cmt['like_count'] = df_cmt['like_count'].replace(np.nan ,0)
     #  df_cmt['user_name'] = df_cmt['user_name'].dropna()
      df_cmt = df_cmt[df_cmt['user_name'].notna()]
-     return df_cmt
+     if os.path.exists("F:\RnD\ETL\etlCrawlData\cmtshopee.csv"):
+        os.remove("F:\RnD\ETL\etlCrawlData\cmtshopee.csv")
+     df_cmt.to_csv("F:\RnD\ETL\etlCrawlData\cmtshopee.csv", encoding="utf-8-sig") 
+    #  return df_cmt
 
 # df_product= extract_shopee_comment(ShopeeCmtUrl)
 # # print("gia tri df: \n",df_product['user_name']) 
@@ -244,14 +275,19 @@ def extract_shopee_comment(url):
 #     os.remove("F:\RnD\ETL\etlCrawlData\cmtshopee.csv")
 # df_product.to_csv("F:\RnD\ETL\etlCrawlData\cmtshopee.csv", encoding="utf-8-sig") 
 
-def load_items_data(shopee_dataframe, tiki_dataframe, lazada_dataframe):
+def load_items_data(shopee_url, tiki_url, lazada_url):
+
+    shopee_dataframe = extract_from_csv(shopee_url)
+    tiki_dataframe = extract_from_csv(tiki_url)
+    lazada_dataframe = extract_from_csv(lazada_url)
     print("Load items data into database...")
     conn = None
     conn = psycopg2.connect(user = "postgres",
                             password = "123456",
-                            host = "localhost",
-                            port = "5480",
-                            database = "cameraProduct"
+                            host = "127.0.0.1",
+                            # host = "localhost",
+                            port = "5432",
+                            database = "cameraproduct"
     )
     conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT) 
     conn.autocommit = True
@@ -350,14 +386,18 @@ def load_items_data(shopee_dataframe, tiki_dataframe, lazada_dataframe):
 
 
 
-def load_cmt_data(tiki_cmt,shopee_cmt ):
+def load_cmt_data(tiki_url, shopee_url):
+
+    shopee_cmt = extract_from_csv(shopee_url)
+    tiki_cmt = extract_from_csv(tiki_url)
+    
     print("Load comments data into database...")
     conn = None
     conn = psycopg2.connect(user = "postgres",
                             password = "123456",
-                            host = "localhost",
-                            port = "5480",
-                            database = "cameraProduct"
+                            host = "127.0.0.1",
+                            port = "5432",
+                            database = "cameraproduct"
     )
     conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT) 
     conn.autocommit = True
@@ -432,24 +472,35 @@ def load_cmt_data(tiki_cmt,shopee_cmt ):
         except(psycopg2.Error):
             continue
 
-def log(logfile,message,duration=0):
+def log(logfile_url,message,duration=0):
     timestamp_format = '%Y-%h-%d-%H:%M:%S' # Year-Monthname-Day-Hour-Minute-Second
     now = datetime.now() # get current timestamp
     timestamp = now.strftime(timestamp_format)
-    if os.path.exists(logfile):
-        os.remove(logfile)
-    with open(logfile,"a") as f:
+    if os.path.exists(logfile_url):
+        os.remove(logfile_url)
+    with open(logfile_url,"a") as f:
         if(duration!=0):
             f.write(message + duration+'\n')
             f.write("*" * 50+ '\n')
         else:
             f.write(timestamp + ',' + message + '\n')  
+# LazadaItemsUrl,ShopeeItemsUrl,ShopeeShopUrl,TikiItemsUrl,ShopeeCmtUrl,TikiCmtUrl
+def deployTheTransformation():
+    extract_lazada_items(LazadaItemsUrl)
+    extract_shopee_items(ShopeeItemsUrl, ShopeeShopUrl)
+    extract_ctiki_items(TikiItemsUrl)
+    extract_shopee_comment(ShopeeCmtUrl)
+    extract_ctiki_comment(TikiCmtUrl)
+# extracted_shopee_items_url,extracted_tiki_items_url,extracted_lazada_items_url,extracted_tiki_cmt_url,extracted_shopee_cmt_url
+def deployTheLoading():
+    load_items_data(extracted_shopee_items_url, extracted_tiki_items_url, extracted_lazada_items_url)
+    load_cmt_data(extracted_tiki_cmt_url,extracted_shopee_cmt_url)
+    
+
+# def demo():
+#     print("demo day nay: \n")
 
 
-df_lazada= extract_lazada_items(LazadaItemsUrl)
-df_shopee= extract_shopee_items(ShopeeItemsUrl, ShopeeShopUrl)
-df_tiki= extract_ctiki_items(TikiItemsUrl)
-load_items_data(df_shopee, df_tiki, df_lazada)
-df_cmt_shopee=extract_shopee_comment(ShopeeCmtUrl)
-df_cmt_tiki=extract_ctiki_comment(TikiCmtUrl)
-load_cmt_data(df_cmt_tiki,df_cmt_shopee)
+
+# deployTheTransformation(LazadaItemsUrl,ShopeeItemsUrl,ShopeeShopUrl,TikiItemsUrl,ShopeeCmtUrl,TikiCmtUrl)
+# deployTheLoading(extracted_shopee_items_url,extracted_tiki_items_url,extracted_lazada_items_url,extracted_tiki_cmt_url,extracted_shopee_cmt_url)

@@ -1,5 +1,3 @@
-**Báo cáo project - Phạm Hồng Giang**
-
 Tài liệu mô tả ETL pipeline for shopping website data 
 
 
@@ -50,6 +48,7 @@ Tài liệu mô tả ETL pipeline for shopping website data
 [2.  Mô tả chi tiết về các tool sử dụng.	3](#_wqnzy6llt8df)
 
 [3. Workflow.	3](#_em4oe6nue8bj)
+
 
 [**I. Quá trình thực hiện.	4**](#_vzwdlrwq2g18)
 
